@@ -1,0 +1,17 @@
+{
+  "name": "mega-project",
+  "version": "1.0.0",
+  "description": "simple todo management tool",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "K sai uday krishna",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.2"
+  }
+}
