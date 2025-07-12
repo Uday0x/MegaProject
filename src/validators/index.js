@@ -42,3 +42,5 @@ const userLoginValidtor =()=>{
         
     ]
 }
+
+export { userRegistrationValidator, userLoginValidtor };
