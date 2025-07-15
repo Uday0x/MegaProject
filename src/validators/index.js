@@ -20,8 +20,18 @@ const userRegistrationValidator = () => {
         .notEmpty()
         .withMessage("username is required")
         .islength({ min: 3, max: 20 })
-        .withMessage("username msut be 3 to 20 characters long"),
+        .withMessage("username must be 3 to 20 characters long"),
 
+         body("password")
+        .notEmpty()
+        .withMessage("Password is required")
+        .islength({ min: 3, max: 20 })
+        .withMessage("passowrd must min 3 to 20 characters"),
+
+        
+        body("role")
+        .notEmpty()
+        .withMessage("plz provide the role")
     ];
 }
 
@@ -29,7 +39,7 @@ const userRegistrationValidator = () => {
 const userLoginValidtor =()=>{
     return [
         body("email")
-        .isEmpty()
+        .notEmpty()
         .withMessage("Email is required")
         .isEmail()
         .withMessage("Email is not valid"),
@@ -37,7 +47,7 @@ const userLoginValidtor =()=>{
 
 
         body("password")
-        .isEmpty()
+        .notEmpty()
         .withMessage("Password is required")
         
     ]
