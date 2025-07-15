@@ -31,21 +31,20 @@ const transporter = nodemailer.createTransport({
 
 
 
-const mail = await transporter.sendMail({
-    from: 'manager@gmail.com',
-    to: options.email,
-    subject: options.subject,
-    text: emailText, // plain‑text body
-    html: emailBody, // HTML body
-  });
+const mailOptions = {
+  from: 'manager@gmail.com',
+  to: options.email,
+  subject: options.subject,
+  text: emailText,
+  html: emailBody,
+};
 
-
-  try {
-    await transporter.sendMail(mail)
-  } catch (error) {
-    console.error("some error in sending the mail plz check again")
-  }
+try {
+  await transporter.sendMail(mailOptions); // ✅ send directly
+} catch (error) {
+  console.error("Error sending email:", error);
 }
+
 
 
 const emailVerificationMailgenContent = async(username,verificationUrl)=>{
@@ -88,7 +87,7 @@ const forgotPasswordMailgenContent = async(username,passwordResetUrl)=>{
     },
   };
 }
-
+}
 export {
     sendMail,
     emailVerificationMailgenContent,
