@@ -111,10 +111,22 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
+  try {
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: true,
+      expires: new Date(0),
+      sameSite: "lax",
+    });
 
-  //validation
+    return res.status(201).json(
+      new ApiResponse(201, null, "User logged out successfully")
+    );
+  } catch (error) {
+    throw new ApiError(200, "Some problem in logging the user out", false);
+  }
 });
+
 
 const verifyEmail = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
