@@ -3,7 +3,7 @@ import { ApiError } from "../utils/api-error.js";
 //this is given by expres validator 
 
 
-const validate = async(req , res ,next)=>{
+ export const validate = async(req , res ,next)=>{
     const errors = validationResult(req);
     //similar to req .user = decoded //in auth 
     

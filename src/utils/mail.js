@@ -45,7 +45,7 @@ try {
   console.error("Error sending email:", error);
 }
 
-
+}
 
 const emailVerificationMailgenContent = async(username,verificationUrl)=>{
     return {
@@ -87,7 +87,7 @@ const forgotPasswordMailgenContent = async(username,passwordResetUrl)=>{
     },
   };
 }
-}
+
 export {
     sendMail,
     emailVerificationMailgenContent,

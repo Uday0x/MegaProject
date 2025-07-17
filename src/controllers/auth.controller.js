@@ -1,9 +1,11 @@
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/api-error.js";
-import { ApiResposne } from "../utils/api-response.js";
+import { ApiResponse } from "../utils/api-response.js"
 import { asyncHandler } from "../utils/async-handler.js";
-import { sendMail } from "../utils/MAIL.JS";
-import { emailVerificationMailgenContent } from "../utils/MAIL.JS";
+import { sendMail } from "../utils/mail.js"
+import { emailVerificationMailgenContent } from "../utils/mail.js"
+
+
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
   //validation
@@ -14,17 +16,18 @@ const registerUser = asyncHandler(async (req, res) => {
     const existingUser = await User.findOne({
       $or: [{ email }, { username }]  //both email and username is given unique (databse design)
     })
-  
+    
     if (existingUser) {
       throw new ApiError(202, "user already exists with this username and passowrd", false)
     }
-  
+
     const user = await User.create({
       email,
       username,
       password,
       role
     })
+    
   
     if (!user) {
       throw new ApiError(202, "user not craeted plz check", false)
