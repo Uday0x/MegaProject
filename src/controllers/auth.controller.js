@@ -69,25 +69,26 @@ const loginUser = asyncHandler(async (req, res) => {
   try {
     const { email, username, password, role } = req.body;
 
-    //validation //user login vlaidator we pass it in route
-    const user = User.findOne({
+    //validation //user login vlaidator we pass it in route 
+    
+    const user =await User.findOne({
       email
     })
-
+    // console.log(user.email,"user toh mil rha hai")
     if (!user) {
       throw new ApiError(202, "user not found", false)
     }
 
     //comapring the hashed passowrd 
-    const isMatch = await user.isPassowrdCorrect()
-
+    const isMatch = await user.isPassowrdCorrect(password)
+    console.log("ismatch ho rha hai hai ki nhi?",isMatch)
     if (!isMatch) {
       throw new ApiError(202, "passowrd not matching at the hashing level", false)
     }
 
 
     //setting the jwt token
-    const token = user.generateAcccesToken();
+    const token = await user.generateAcccesToken();
 
     const cookieoptions = {
       httpOnly: true,
@@ -99,8 +100,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
     return res.status(201).json(new ApiResponse(201, {
-      token
-    }, "user verification doen succesfully"));
+      token,
+
+    }, "user verification done succesfully"));
 
   } catch (error) {
     throw new ApiError(202, "something went wrong in logging in plz check", false)
