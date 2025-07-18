@@ -77,5 +77,13 @@ const resendEmailUrl =()=>{
     ]
 }
 
+const forgotPasswordRequestURl = ()=>{
+    return [
+        body("email")
+        .notEmpty()
+        .withMessage("email cannot be empty")
+    ]
+}
 
-export { userRegistrationValidator, userLoginValidtor, userverificationUrl, resendEmailUrl };
+
+export { userRegistrationValidator, userLoginValidtor, userverificationUrl, resendEmailUrl, forgotPasswordRequestURl };

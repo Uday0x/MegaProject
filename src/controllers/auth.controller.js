@@ -184,6 +184,8 @@ const resendEmailVerification = async (req, res) => {
   const { email, username, password, role } = req.body;
 
 
+  //testing done
+
 try {
   
     //validation
@@ -252,11 +254,51 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   //validation
 });
 
-const forgotPasswordRequest = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
-
-  //validation
-});
+const forgotPasswordRequest = async (req, res) => {
+  try {
+    const { email, username, password, role } = req.body;
+  
+    //validation
+    //extarct email
+    //find user (FindOne)
+    //generate a temporaray token //give it to the user
+    //create a link and send to the user (email)
+    const user =await User.findOne({
+      email
+    })
+   console.log("reaching here")
+    if(!user){
+      return new ApiError(202,"user cannot be found",false)
+    }
+  
+    const  { unhashedToken, hashedToken, tokenexpiry } = await user.temporaryToken();
+    user.forgotPasswordToken = hashedToken;
+    user.forgotPasswordExpiry = tokenexpiry;
+    
+    await user.save()
+    console.log("await ke baad")
+    const ResetPassowrdUrl = `${process.env.Base_url}/api/v1/users/verify?token=${unhashedToken}&id=${user.id}`;
+  
+    
+    const mailContent = await emailVerificationMailgenContent(user.username, ResetPassowrdUrl);
+    
+    
+      await sendMail({
+        email: user.email,
+        subject: "verify your email",
+        mailgenContent: mailContent
+      })
+    
+      return res.status(200).json(new ApiResponse (201,{
+        id: user._id,
+        forgotPasswordToken: user.forgotPasswordToken
+      },"resetpassowrd token sent successfully"))
+  }
+   catch (error) {
+     return new ApiError(202,"something wrong in sending the reset passowrd mail",false)
+  }
+}
+;
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
