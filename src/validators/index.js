@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body,param } from 'express-validator';
 //wtever we get req.body can be caught here
 
 
@@ -53,4 +53,21 @@ const userLoginValidtor =()=>{
     ]
 }
 
-export { userRegistrationValidator, userLoginValidtor };
+const userverificationUrl = ()=>{
+    return [
+        param("id")
+        .notEmpty()
+        .withMessage("Id is required"),
+
+
+        param("token")
+        .notEmpty()
+        .withMessage("Token is required"),
+        
+
+        
+    ]
+}
+
+
+export { userRegistrationValidator, userLoginValidtor, userverificationUrl };

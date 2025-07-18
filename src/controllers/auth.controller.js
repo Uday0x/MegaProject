@@ -36,13 +36,16 @@ const registerUser = asyncHandler(async (req, res) => {
     const { unhashedToken, hashedToken, tokenexpiry } = await user.temporaryToken();
   
     //saving the token in the database
+    //its like giving the user a temporary token to verify their email
+    //this token will be used to verify the email
     user.emailVerificationToken = hashedToken;
     user.emailVerificationExpiry = tokenexpiry;
   
   
     await user.save();
   
-    const verificationUrl = `${process.env.Base_url}/verify/${unhashedToken}`;
+    const verificationUrl = `${process.env.Base_url}/verify?token=${unhashedToken}&id=${user.id}`;
+
   
     const mailContent = await emailVerificationMailgenContent(user.username, verificationUrl);
   
@@ -129,9 +132,35 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 const verifyEmail = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
 
   //validation
+  //take the token from url
+  //unhash the token from database
+  //if the URL matches 
+  //set isVerfied to true 
+
+  const { token , id } = req.params;
+
+  if(!token || !id){
+    throw new ApiError(202,"token not found ",false)
+  }
+
+  const user = await User.findById(id)
+
+  if(!user || !user.emailVerificationToken){
+      throw new ApiError(202,"user not found",false)
+  }
+
+
+  const isMatch = await bcrypt.compare(unhashedToken,user.verificationUrl)
+
+  if(!isMatch){
+    return new ApiError(202,"token not matching",false)
+  }
+  user.isEmailVerified = true;
+  user.verificationUrl = null;
+  await user.save()
+
 });
 
 const resendEmailVerification = asyncHandler(async (req, res) => {

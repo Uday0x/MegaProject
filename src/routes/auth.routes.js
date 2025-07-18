@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { logoutUser, registerUser } from "../controllers/auth.controller.js";
+import { logoutUser, registerUser, verifyEmail } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validator.middleware.js";
-import { userRegistrationValidator } from "../validators/index.js";
+import { userRegistrationValidator, userverificationUrl } from "../validators/index.js";
 import { loginUser } from "../controllers/auth.controller.js";
 import { userLoginValidtor } from "../validators/index.js";
 import { isLoggedIn } from "../middlewares/isloggedin.middleware.js";
@@ -21,4 +21,8 @@ router.route("/login")
 
 router.route("/logout")
 .get(userLoginValidtor(),validate,isLoggedIn,logoutUser)
+
+
+router.route("/verify")
+.get(userverificationUrl(),validate,verifyEmail)
 export default router;
