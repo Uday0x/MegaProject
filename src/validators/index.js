@@ -1,4 +1,4 @@
-import { body,param } from 'express-validator';
+import { body,param, query } from 'express-validator';
 //wtever we get req.body can be caught here
 
 
@@ -55,12 +55,12 @@ const userLoginValidtor =()=>{
 
 const userverificationUrl = ()=>{
     return [
-        param("id")
+        query("id")
         .notEmpty()
         .withMessage("Id is required"),
 
 
-        param("token")
+        query("token")
         .notEmpty()
         .withMessage("Token is required"),
         
@@ -69,5 +69,13 @@ const userverificationUrl = ()=>{
     ]
 }
 
+const resendEmailUrl =()=>{
+    return [
+        body("email")
+        .notEmpty()
+        .withMessage("email cannot be empty")
+    ]
+}
 
-export { userRegistrationValidator, userLoginValidtor, userverificationUrl };
+
+export { userRegistrationValidator, userLoginValidtor, userverificationUrl, resendEmailUrl };

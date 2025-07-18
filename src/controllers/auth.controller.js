@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/api-response.js"
 import { asyncHandler } from "../utils/async-handler.js";
 import { sendMail } from "../utils/mail.js"
 import { emailVerificationMailgenContent } from "../utils/mail.js"
-
+import bcrypt from "bcryptjs";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
@@ -27,7 +27,7 @@ const registerUser = asyncHandler(async (req, res) => {
       password,
       role
     })
-    
+    console.log(user, "user created successfully")
   
     if (!user) {
       throw new ApiError(202, "user not craeted plz check", false)
@@ -44,7 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
   
     await user.save();
   
-    const verificationUrl = `${process.env.Base_url}/verify?token=${unhashedToken}&id=${user.id}`;
+    const verificationUrl = `${process.env.Base_url}/api/v1/users/verify?token=${unhashedToken}&id=${user.id}`;
 
   
     const mailContent = await emailVerificationMailgenContent(user.username, verificationUrl);
@@ -138,40 +138,112 @@ const verifyEmail = asyncHandler(async (req, res) => {
   //unhash the token from database
   //if the URL matches 
   //set isVerfied to true 
+  console.log("going inside try block")
+  try {
+    console.log("route hit")
+    const { token , id } = req.query;
+  
+    if(!token || !id){
+      throw new ApiError(202,"token not found ",false)
+    }
+    
+    const user = await User.findById(id)
+    console.log(user,"user found in verify email")
 
-  const { token , id } = req.params;
+    if(!user || !user.emailVerificationToken){
+        throw new ApiError(202,"user not found",false)
+    }
+  
+    console.log("ismatch se pehle")
+    const isMatch = await bcrypt.compare(token,user.emailVerificationToken)
+     console.log("after isMatch")
+    if(!isMatch){
+      throw new ApiError(202,"token not matching",false)
+    }
 
-  if(!token || !id){
-    throw new ApiError(202,"token not found ",false)
+    console.log(isMatch,"isMatch is true")
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    console.log("idhar ayye")
+    await user.save()
+    console.log("user email verified successfully")
+
+    return res.status(201).json(new ApiResponse(201, {
+      id: user._id,
+      emailVerificationToken:user.emailVerificationToken,
+      isEmailVerified: user.isEmailVerified
+    }, "User verified successfully"));
+
+
+  } catch (error) {
+    throw new ApiError(202,"something went wrong in verifying the email",false)
   }
-
-  const user = await User.findById(id)
-
-  if(!user || !user.emailVerificationToken){
-      throw new ApiError(202,"user not found",false)
-  }
-
-
-  const isMatch = await bcrypt.compare(unhashedToken,user.verificationUrl)
-
-  if(!isMatch){
-    return new ApiError(202,"token not matching",false)
-  }
-  user.isEmailVerified = true;
-  user.verificationUrl = null;
-  await user.save()
-
 });
 
-const resendEmailVerification = asyncHandler(async (req, res) => {
+const resendEmailVerification = async (req, res) => {
   const { email, username, password, role } = req.body;
 
-  //validation
-});
+
+try {
+  
+    //validation
+    //validation
+    //find user based on email from req.body
+    //generate a token and save it in the user model
+    //check if user is email verified
+    //if yes send u r already verfied
+    //if no send a mail with the token
+    //resend the email verfication link again
+  
+  
+    const user = await User.findOne({
+        email
+    })
+    console.log(user,"user found")
+  
+    if(user.isEmailVerified){
+      return ApiResponse(201,"user verified already",false)
+      }
+    
+  
+    //resend the email verfication link
+      const { unhashedToken, hashedToken, tokenexpiry } = await user.temporaryToken();
+    
+      //saving the token in the database
+      //its like giving the user a temporary token to verify their email
+      //this token will be used to verify the email
+      user.emailVerificationToken = hashedToken;
+      user.emailVerificationExpiry = tokenexpiry;
+    
+    
+      await user.save();
+    
+      const verificationUrl = `${process.env.Base_url}/api/v1/users/verify?token=${unhashedToken}&id=${user.id}`;
+  
+    
+      const mailContent = await emailVerificationMailgenContent(user.username, verificationUrl);
+    
+    
+      await sendMail({
+        email: user.email,
+        subject: "verify your email",
+        mailgenContent: mailContent
+      })
+  
+      
+      return res.status(201).json(new ApiResponse(201, {
+        id: user._id,
+      }, "Email sent successfully"));
+  
+  }
+   catch (error) {
+      return new ApiError(200,"Resend the email again")
+  }
+}
+
 const resetForgottenPassword = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
 
-  //validation
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
