@@ -29,7 +29,7 @@ const projectMemberSchema = new Schema(
    
 )
 
-export const ProjectMemberSchema = mongoose.model(
+export const ProjectMember = mongoose.model(
     "ProjectMemberSchema",
     projectMemberSchema
 );
