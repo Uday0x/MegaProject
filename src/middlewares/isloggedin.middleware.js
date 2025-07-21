@@ -39,7 +39,7 @@ export const validateprojectPermisiion =(roles = [])=>
       
       const projectmembers = await ProjectMember.findOne({
         project:mongoose.Types.ObjectId(projectId), //sometimes params value changes it to string //better change it to id
-        user:mongoose.Types.ObjectId(req.user._id)
+        user:mongoose.Types.ObjectId(req.user._id) //
       })
 
       if(!projectmembers){

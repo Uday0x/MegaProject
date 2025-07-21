@@ -20,7 +20,7 @@ const projectNoteSchema = new Schema(
         }
      },
 {
-    timestamps : true //gives craeted at and updatedat
+    timestamps : true //gives createdat and updatedat
 })
 
 export const ProjectNote = mongoose.model("ProjectNote",projectNoteSchema)
