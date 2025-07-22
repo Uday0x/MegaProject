@@ -9,23 +9,29 @@ import mongoose from "mongoose"
 
 const getNotes = async (req, res) => {
   // get all notes
-  const { projectId } = req.params
-
-
-  if (!projectId) {
-    throw new ApiError(202, "project id not found", false)
+  try {
+    const { projectId } = req.params
+  
+  
+    if (!projectId) {
+      throw new ApiError(202, "project id not found", false)
+    }
+  
+    const project = await Project.findById(mongoose.Types.ObjectId(projectId))
+  
+    const notes = await ProjectNote.find({
+      project: mongoose.Types.ObjectId(projectId)
+    }).populate("createdBy", "username email fullname")
+  
+  
+    return res.status(200).json(
+      new (ApiResponse(200, notes, "notes fected successfully"))
+    )
+  } catch (error) {
+    return res.status(500).json(
+      new (ApiError(200,"Something went wrong in fetching the notes",false))
+    )
   }
-
-  const project = await Project.findById(mongoose.Types.ObjectId(projectId))
-
-  const notes = await ProjectNote.find({
-    project: mongoose.Types.ObjectId(projectId)
-  }).populate("createdBy", "username email fullname")
-
-
-  return res.status(200).json(
-    new (ApiResponse(200, notes, "notes fected successfully"))
-  )
 
 };
 

@@ -1,6 +1,6 @@
 import express from "express";
 import router from "./routes/auth.routes.js";
-import router from "./routes/note.routes.js";
+import noteRouter from './routes/note.routes.js'
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
@@ -14,5 +14,6 @@ app.use(cors({
   credentials: true,               
 }));
 app.use('/api/v1/users',router)
+app.use('/api/v1/notes',noteRouter)
 
 export default app;

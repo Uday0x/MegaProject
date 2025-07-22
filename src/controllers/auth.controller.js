@@ -244,7 +244,42 @@ try {
 }
 
 const resetForgottenPassword = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
+  // const { email, username, password, role } = req.body;
+    //get the url from email 
+    //validation will be done by middleware
+    //find user based on Id
+    
+
+    try {
+      const {token,id } = req.params
+      const { newPassword } = req.body
+  
+      //validations through middleware
+  
+  
+      const user = await User.findById(id);
+      if(!user){
+        throw new ApiError(201,"user cannot be found based on the given Id",false)
+      }
+  
+  
+      const isMatch = await bcrypt.compare(token,user.forgotPasswordToken)
+      // const isMatchPassword = await bcrypt.compare(password,user.password)
+  
+      if(!isMatch){
+        throw new ApiError(200," token not matching with the database",false)
+      }
+  
+      const hasedPassword = await bcrypt.hash(newPassword,10)
+      user.password = hasedPassword;
+  
+      await user.save();
+    } catch (error) {
+      throw new ApiError(200,"something wnet wrong in resetforgot password",false)
+    }
+
+
+
 
 });
 
@@ -277,7 +312,7 @@ const forgotPasswordRequest = async (req, res) => {
     
     await user.save()
     console.log("await ke baad")
-    const ResetPassowrdUrl = `${process.env.Base_url}/api/v1/users/verify?token=${unhashedToken}&id=${user.id}`;
+    const ResetPasswordUrl = `${process.env.Base_url}/resetPassword/${unhashedToken}/${user._id}`;
   
     
     const mailContent = await emailVerificationMailgenContent(user.username, ResetPassowrdUrl);

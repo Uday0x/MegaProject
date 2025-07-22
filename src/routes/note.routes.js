@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { UserRolesEnum } from "../utils/constants.js";
 import { validateprojectPermisiion } from "../middlewares/isloggedin.middleware.js";
+import { getNotes } from "../controllers/note.controller.js";
+
+const noteRouter = Router();
 
 
-const router = Router();
-
-
-router.route(":/projectId")
+noteRouter.route("/:projectId")
         .get(getNotes)
         .post(
             validateprojectPermisiion([UserRolesEnum.ADMIN, UserRolesEnum.MEMBER])
         )
 
-export default router
+export default noteRouter

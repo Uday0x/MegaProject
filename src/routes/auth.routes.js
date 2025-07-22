@@ -30,6 +30,10 @@ router.route("/resendEmail")
 .get(resendEmailUrl(),validate,resendEmailVerification)
 
 
-router.route("/resetPassword")
+router.route("/resetPassword") //this is sending the mail 
 .get(forgotPasswordRequestURl(),validate,forgotPasswordRequest)
+
+
+router.route("/resetForgottenPassword")
+
 export default router;
